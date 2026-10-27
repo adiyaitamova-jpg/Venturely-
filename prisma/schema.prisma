@@ -1,0 +1,783 @@
+// Venturely data model.
+// Conventions: cuid ids, createdAt/updatedAt on mutable records, cascading deletes
+// from User so account deletion removes personal data, SetNull where history
+// should survive (e.g. who reviewed a report).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── Enums ─────────────────────────────
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+/// Who can see a profile. MEMBERS is the default (privacy by default for a teen audience).
+enum ProfileVisibility {
+  PUBLIC // anyone with the link, including signed-out visitors
+  MEMBERS // signed-in Venturely members only
+  PRIVATE // only the owner; hidden from discovery, matching and leaderboards
+}
+
+enum Availability {
+  NOT_AVAILABLE
+  FEW_HOURS // 1–3 h / week
+  PART_TIME // 4–8 h / week
+  COMMITTED // 9+ h / week
+}
+
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum Region {
+  AFRICA
+  ASIA
+  EUROPE
+  MIDDLE_EAST
+  NORTH_AMERICA
+  OCEANIA
+  SOUTH_AMERICA
+}
+
+enum ProjectCategory {
+  AI
+  SOFTWARE
+  ROBOTICS
+  RESEARCH
+  SUSTAINABILITY
+  EDUCATION
+  ENTREPRENEURSHIP
+  DESIGN
+  SOCIAL_IMPACT
+}
+
+enum SkillCategory {
+  ENGINEERING
+  AI_DATA
+  HARDWARE
+  RESEARCH
+  DESIGN
+  BUSINESS
+  COMMUNICATION
+}
+
+/// 1 = learning … 4 = expert. Self-declared; never scored on its own.
+enum SkillLevel {
+  LEARNING
+  PRACTICED
+  PROFICIENT
+  EXPERT
+}
+
+enum AchievementType {
+  AWARD
+  COMPETITION
+  CERTIFICATION
+  PUBLICATION
+  PROGRAM
+  OTHER
+}
+
+enum AchievementLevel {
+  SCHOOL
+  REGIONAL
+  NATIONAL
+  INTERNATIONAL
+}
+
+enum VerificationStatus {
+  SELF_REPORTED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum PortfolioKind {
+  PROJECT
+  RESEARCH
+  OPEN_SOURCE
+  DESIGN
+  WRITING
+  OTHER
+}
+
+enum ProjectStage {
+  IDEA
+  PLANNING
+  IN_PROGRESS
+  PROTOTYPE
+  LAUNCHED
+  COMPLETED
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum ProjectVisibility {
+  PUBLIC
+  MEMBERS
+}
+
+enum Commitment {
+  LIGHT // 1–3 h / week
+  MODERATE // 4–8 h / week
+  INTENSIVE // 9+ h / week
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+enum MilestoneStatus {
+  PLANNED
+  IN_PROGRESS
+  DONE
+}
+
+enum RankCategory {
+  GLOBAL
+  ENGINEERING
+  AI
+  RESEARCH
+  DESIGN
+  ENTREPRENEURSHIP
+  IMPACT
+}
+
+enum NotificationType {
+  INVITATION_RECEIVED
+  INVITATION_ACCEPTED
+  INVITATION_DECLINED
+  APPLICATION_RECEIVED
+  APPLICATION_ACCEPTED
+  APPLICATION_DECLINED
+  MEMBER_JOINED
+  MILESTONE_COMPLETED
+  ACHIEVEMENT_VERIFIED
+  ACHIEVEMENT_REJECTED
+  FEEDBACK_RECEIVED
+  SYSTEM
+}
+
+enum ActivityType {
+  PROJECT_CREATED
+  STAGE_CHANGED
+  MEMBER_JOINED
+  MILESTONE_ADDED
+  MILESTONE_COMPLETED
+  ROLE_OPENED
+  PROJECT_UPDATED
+}
+
+enum AITool {
+  MATCHER
+  EVALUATOR
+  COPILOT
+}
+
+enum AIMessageRole {
+  USER
+  ASSISTANT
+}
+
+enum AIRequestStatus {
+  SUCCEEDED
+  FAILED
+}
+
+enum ReportTargetType {
+  USER
+  PROJECT
+  PORTFOLIO_ITEM
+  ACHIEVEMENT
+}
+
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  INAPPROPRIATE
+  IMPERSONATION
+  FALSE_CLAIM
+  SAFETY_CONCERN
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  ACTIONED
+  DISMISSED
+}
+
+enum SavedSource {
+  MANUAL
+  AI_MATCH
+}
+
+// ───────────────────────── Identity & sessions ─────────────────────────
+
+model User {
+  id              String    @id @default(cuid())
+  /// Never shown publicly.
+  email           String    @unique
+  passwordHash    String
+  role            UserRole  @default(USER)
+  /// Seeded demo accounts are flagged and badged in the UI.
+  isDemo          Boolean   @default(false)
+  /// Set when an admin suspends an account; suspended users cannot sign in and are hidden.
+  suspendedAt     DateTime?
+  termsAcceptedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  profile              Profile?
+  sessions             Session[]
+  passwordResetTokens  PasswordResetToken[]
+  skills               UserSkill[]
+  achievements         Achievement[]             @relation("AchievementOwner")
+  verifiedAchievements Achievement[]             @relation("AchievementVerifier")
+  portfolioItems       PortfolioItem[]
+  ownedProjects        Project[]                 @relation("ProjectOwner")
+  memberships          ProjectMember[]
+  invitationsSent      CollaborationInvitation[] @relation("InvitationSender")
+  invitationsReceived  CollaborationInvitation[] @relation("InvitationRecipient")
+  applications         ProjectApplication[]      @relation("Applicant")
+  applicationsReviewed ProjectApplication[]      @relation("ApplicationReviewer")
+  assignedMilestones   ProjectMilestone[]
+  feedbackGiven        PeerFeedback[]            @relation("FeedbackAuthor")
+  feedbackReceived     PeerFeedback[]            @relation("FeedbackSubject")
+  rankingSnapshots     RankingSnapshot[]
+  savedProfiles        SavedProfile[]            @relation("Saver")
+  savedBy              SavedProfile[]            @relation("Saved")
+  notifications        Notification[]
+  activity             ActivityEvent[]
+  blocks               Block[]                   @relation("Blocker")
+  blockedBy            Block[]                   @relation("Blocked")
+  reportsFiled         Report[]                  @relation("Reporter")
+  reportsResolved      Report[]                  @relation("Resolver")
+  aiConversations      AIConversation[]
+  aiAssessments        AIProjectAssessment[]
+  aiMatchRuns          AIMatchRun[]
+  aiUsage              AIUsage[]
+}
+
+model Session {
+  /// SHA-256 of the session token; the raw token only ever lives in the cookie.
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  /// SHA-256 of the emailed token.
+  id        String    @id
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// Fixed-window rate limiting shared across server instances.
+model RateLimitBucket {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+}
+
+// ───────────────────────────── Profiles ─────────────────────────────
+
+model Profile {
+  userId              String            @id
+  username            String            @unique
+  displayName         String
+  bio                 String            @default("")
+  headline            String            @default("")
+  intendedMajor       String            @default("")
+  academicInterests   String[]          @default([])
+  causes              String[]          @default([])
+  languages           String[]          @default([])
+  preferredCategories ProjectCategory[] @default([])
+  preferredRoles      String[]          @default([])
+  projectIdeas        String            @default("")
+  availability        Availability      @default(FEW_HOURS)
+  experienceLevel     ExperienceLevel   @default(BEGINNER)
+  /// Coarse region only — never a city or exact location.
+  region              Region?
+  visibility          ProfileVisibility @default(MEMBERS)
+  websiteUrl          String?
+  githubUrl           String?
+  linkedinUrl         String?
+  /// Small validated image stored in the DB (PNG/JPEG/WebP, ≤ 512 KB).
+  avatarData          Bytes?
+  avatarMime          String?
+  avatarUpdatedAt     DateTime?
+  /// Hue (0–359) for the generated monogram avatar.
+  avatarHue           Int               @default(150)
+  /// Last completed onboarding step (0 = not started). null onboardedAt = onboarding pending.
+  onboardingStep      Int               @default(0)
+  onboardedAt         DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([visibility, onboardedAt])
+  @@index([createdAt])
+}
+
+model Skill {
+  id       String        @id @default(cuid())
+  name     String        @unique
+  slug     String        @unique
+  category SkillCategory
+
+  users          UserSkill[]
+  portfolioItems PortfolioItem[]
+  projects       Project[]
+  roles          ProjectRole[]
+}
+
+model UserSkill {
+  userId    String
+  skillId   String
+  level     SkillLevel @default(PRACTICED)
+  createdAt DateTime   @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([userId, skillId])
+  @@index([skillId])
+}
+
+model Achievement {
+  id           String             @id @default(cuid())
+  userId       String
+  title        String
+  description  String             @default("")
+  type         AchievementType
+  level        AchievementLevel
+  category     ProjectCategory
+  issuer       String             @default("")
+  date         DateTime
+  evidenceUrl  String?
+  status       VerificationStatus @default(SELF_REPORTED)
+  verifiedAt   DateTime?
+  verifiedById String?
+  reviewNote   String?
+  position     Int                @default(0)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  user       User  @relation("AchievementOwner", fields: [userId], references: [id], onDelete: Cascade)
+  verifiedBy User? @relation("AchievementVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+
+  @@index([userId, position])
+  @@index([status])
+}
+
+model PortfolioItem {
+  id           String          @id @default(cuid())
+  userId       String
+  title        String
+  description  String
+  kind         PortfolioKind
+  category     ProjectCategory
+  date         DateTime
+  /// What this person personally did.
+  contribution String          @default("")
+  /// Demonstrated outcome (users, results, measurements).
+  outcome      String          @default("")
+  projectUrl   String?
+  evidenceUrl  String?
+  mediaUrl     String?
+  position     Int             @default(0)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills Skill[]
+
+  @@index([userId, position])
+}
+
+// ───────────────────────────── Projects ─────────────────────────────
+
+model Project {
+  id             String            @id @default(cuid())
+  slug           String            @unique
+  title          String
+  tagline        String
+  description    String
+  goals          String            @default("")
+  /// Demonstrated outcomes; required (with evidence) for completion points.
+  outcomes       String            @default("")
+  category       ProjectCategory
+  stage          ProjectStage      @default(IDEA)
+  status         ProjectStatus     @default(ACTIVE)
+  visibility     ProjectVisibility @default(PUBLIC)
+  commitment     Commitment        @default(MODERATE)
+  repoUrl        String?
+  demoUrl        String?
+  ownerId        String
+  stageChangedAt DateTime          @default(now())
+  completedAt    DateTime?
+  archivedAt     DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  owner           User                      @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  skills          Skill[]
+  members         ProjectMember[]
+  roles           ProjectRole[]
+  invitations     CollaborationInvitation[]
+  applications    ProjectApplication[]
+  milestones      ProjectMilestone[]
+  feedback        PeerFeedback[]
+  activity        ActivityEvent[]
+  aiConversations AIConversation[]
+  aiAssessments   AIProjectAssessment[]
+
+  @@index([status, visibility, category])
+  @@index([ownerId])
+  @@index([updatedAt])
+}
+
+model ProjectMember {
+  id               String     @id @default(cuid())
+  projectId        String
+  userId           String
+  role             MemberRole @default(MEMBER)
+  /// Team title, e.g. "ML engineer".
+  title            String     @default("")
+  responsibilities String     @default("")
+  joinedAt         DateTime   @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+}
+
+model ProjectRole {
+  id          String     @id @default(cuid())
+  projectId   String
+  title       String
+  description String     @default("")
+  commitment  Commitment @default(MODERATE)
+  isOpen      Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+
+  project      Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skills       Skill[]
+  invitations  CollaborationInvitation[]
+  applications ProjectApplication[]
+
+  @@index([projectId, isOpen])
+}
+
+model CollaborationInvitation {
+  id          String        @id @default(cuid())
+  projectId   String
+  roleId      String?
+  senderId    String
+  recipientId String
+  message     String        @default("")
+  status      RequestStatus @default(PENDING)
+  respondedAt DateTime?
+  createdAt   DateTime      @default(now())
+
+  project   Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role      ProjectRole? @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  sender    User         @relation("InvitationSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient User         @relation("InvitationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, status])
+  @@index([projectId, status])
+  @@index([senderId, createdAt])
+}
+
+model ProjectApplication {
+  id           String        @id @default(cuid())
+  projectId    String
+  roleId       String?
+  applicantId  String
+  message      String
+  status       RequestStatus @default(PENDING)
+  reviewedById String?
+  reviewedAt   DateTime?
+  createdAt    DateTime      @default(now())
+
+  project    Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role       ProjectRole? @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  applicant  User         @relation("Applicant", fields: [applicantId], references: [id], onDelete: Cascade)
+  reviewedBy User?        @relation("ApplicationReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([projectId, status])
+  @@index([applicantId, status])
+}
+
+model ProjectMilestone {
+  id          String          @id @default(cuid())
+  projectId   String
+  title       String
+  description String          @default("")
+  status      MilestoneStatus @default(PLANNED)
+  dueDate     DateTime?
+  completedAt DateTime?
+  evidenceUrl String?
+  assigneeId  String?
+  position    Int             @default(0)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee User?   @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, position])
+  @@index([assigneeId, status])
+}
+
+/// Teammate feedback on collaboration. Only members of the same project may leave it.
+model PeerFeedback {
+  id           String   @id @default(cuid())
+  projectId    String
+  authorId     String
+  subjectId    String
+  /// 1–5: substance of their contribution.
+  contribution Int
+  /// 1–5: reliability as a teammate.
+  reliability  Int
+  note         String   @default("")
+  createdAt    DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author  User    @relation("FeedbackAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  subject User    @relation("FeedbackSubject", fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, authorId, subjectId])
+  @@index([subjectId])
+}
+
+model ActivityEvent {
+  id        String       @id @default(cuid())
+  projectId String
+  actorId   String
+  type      ActivityType
+  /// Short human-readable detail, e.g. milestone title or new stage.
+  detail    String       @default("")
+  createdAt DateTime     @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  actor   User    @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@index([createdAt])
+}
+
+// ───────────────────────────── Rankings ─────────────────────────────
+
+/// One full recomputation of the leaderboard.
+model RankingRun {
+  id             String   @id @default(cuid())
+  formulaVersion String
+  computedAt     DateTime @default(now())
+
+  snapshots RankingSnapshot[]
+
+  @@index([computedAt])
+}
+
+model RankingSnapshot {
+  id             String       @id @default(cuid())
+  runId          String
+  userId         String
+  category       RankCategory
+  score          Float
+  verifiedPoints Float
+  rank           Int
+  /// Per-signal breakdown (see src/lib/ranking/formula.ts).
+  breakdown      Json
+
+  run  RankingRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  user User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, category, userId])
+  @@index([runId, category, rank])
+  @@index([userId, category])
+}
+
+// ───────────────────────── Social & safety ─────────────────────────
+
+model SavedProfile {
+  userId      String
+  savedUserId String
+  source      SavedSource @default(MANUAL)
+  note        String      @default("")
+  createdAt   DateTime    @default(now())
+
+  user      User @relation("Saver", fields: [userId], references: [id], onDelete: Cascade)
+  savedUser User @relation("Saved", fields: [savedUserId], references: [id], onDelete: Cascade)
+
+  @@id([userId, savedUserId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String           @default("")
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+}
+
+model Block {
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+
+  blocker User @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@id([blockerId, blockedId])
+  @@index([blockedId])
+}
+
+model Report {
+  id             String           @id @default(cuid())
+  reporterId     String
+  targetType     ReportTargetType
+  targetId       String
+  reason         ReportReason
+  details        String           @default("")
+  status         ReportStatus     @default(OPEN)
+  resolvedById   String?
+  resolvedAt     DateTime?
+  resolutionNote String?
+  createdAt      DateTime         @default(now())
+
+  reporter   User  @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  resolvedBy User? @relation("Resolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+}
+
+// ─────────────────────────────── AI ───────────────────────────────
+
+/// Copilot conversations are private to their owner.
+model AIConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String?
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project  Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  messages AIMessage[]
+
+  @@index([userId, updatedAt])
+  @@index([projectId])
+}
+
+model AIMessage {
+  id              String        @id @default(cuid())
+  conversationId  String
+  role            AIMessageRole
+  content         String
+  /// Suggested project-field edits awaiting user review: [{field, value, rationale}].
+  proposedEdits   Json?
+  /// Set once the user has applied (or dismissed) the proposed edits.
+  editsResolvedAt DateTime?
+  createdAt       DateTime      @default(now())
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+model AIProjectAssessment {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String?
+  /// Snapshot of what was evaluated.
+  title     String
+  input     Json
+  result    Json
+  model     String
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([projectId])
+}
+
+model AIMatchRun {
+  id           String   @id @default(cuid())
+  userId       String
+  brief        String
+  requirements Json
+  results      Json
+  /// null when results are deterministic-only (AI unavailable).
+  model        String?
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+/// Ledger used for per-user daily request and token budgets.
+model AIUsage {
+  id        String          @id @default(cuid())
+  userId    String
+  tool      AITool
+  status    AIRequestStatus
+  model     String
+  tokensIn  Int             @default(0)
+  tokensOut Int             @default(0)
+  errorCode String?
+  createdAt DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}

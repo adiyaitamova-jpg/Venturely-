@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+/*
+ * Venturely design tokens.
+ * Warm paper background, ink typography, one restrained forest-green accent.
+ * Every component reads from these tokens; avoid raw hex values in components.
+ */
+@theme {
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --color-paper: #f6f4ef;
+  --color-paper-2: #efece5;
+  --color-surface: #fdfcfa;
+  --color-surface-raised: #ffffff;
+  --color-ink: #16181b;
+  --color-ink-2: #3b4046;
+  --color-muted: #646a71;
+  --color-faint: #8b9097;
+  --color-line: #e4e0d7;
+  --color-line-strong: #d0cbc0;
+
+  --color-accent: #1e4d3b;
+  --color-accent-hover: #163c2e;
+  --color-accent-ink: #12382a;
+  --color-accent-soft: #e4ede7;
+  --color-accent-softer: #f0f5f1;
+  --color-accent-line: #b9d0c2;
+
+  --color-positive: #2c7a4b;
+  --color-positive-soft: #e3f1e8;
+  --color-negative: #b03a2e;
+  --color-negative-soft: #f8e7e4;
+  --color-warning: #8a5d0f;
+  --color-warning-soft: #f7eed9;
+  --color-info: #2f4f9e;
+  --color-info-soft: #e7ecf8;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --shadow-xs: 0 1px 0 rgb(22 24 27 / 0.04);
+  --shadow-sm: 0 1px 2px rgb(22 24 27 / 0.06), 0 0 0 1px rgb(22 24 27 / 0.02);
+  --shadow-md: 0 4px 12px -2px rgb(22 24 27 / 0.08), 0 1px 3px rgb(22 24 27 / 0.06);
+  --shadow-pop: 0 12px 32px -8px rgb(22 24 27 / 0.18), 0 2px 6px rgb(22 24 27 / 0.06);
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  --animate-fade-in: fade-in 160ms ease-out;
+  --animate-slide-up: slide-up 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-slide-in-right: slide-in-right 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-slide-in-bottom: slide-in-bottom 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(6px) scale(0.99); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes slide-in-bottom {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  @keyframes shimmer {
+    0% { opacity: 0.55; }
+    50% { opacity: 1; }
+    100% { opacity: 0.55; }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  hr {
+    border-color: var(--color-line);
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  /* Subtle paper grain used sparingly on marketing surfaces. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(22 24 27 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(22 24 27 / 0.045) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+}
+
+/* Markdown rendered from AI responses. */
+.prose-ai {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--color-ink-2);
+}
+.prose-ai > * + * { margin-top: 0.75em; }
+.prose-ai h1, .prose-ai h2, .prose-ai h3 {
+  color: var(--color-ink);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  margin-top: 1.25em;
+}
+.prose-ai ul { list-style: disc; padding-left: 1.25em; }
+.prose-ai ol { list-style: decimal; padding-left: 1.25em; }
+.prose-ai li + li { margin-top: 0.3em; }
+.prose-ai strong { color: var(--color-ink); font-weight: 600; }
+.prose-ai code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-paper-2);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.prose-ai pre {
+  background: var(--color-paper-2);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.85em;
+}
+.prose-ai pre code { background: none; padding: 0; }
+.prose-ai a { color: var(--color-accent); text-decoration: underline; text-underline-offset: 2px; }
+.prose-ai blockquote { border-left: 2px solid var(--color-line-strong); padding-left: 0.75rem; color: var(--color-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
