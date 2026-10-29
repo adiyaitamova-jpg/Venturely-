@@ -19,7 +19,7 @@ export default function ContactPage() {
       </section>
       <section>
         <h2>Schools &amp; educators</h2>
-        <p>Interested in running Venturely with a club or class? Write to {BRAND.supportEmail} and tell us about your students.</p>
+        <p>Interested in running TEAMi with a club or class? Write to {BRAND.supportEmail} and tell us about your students.</p>
       </section>
     </LegalPage>
   );

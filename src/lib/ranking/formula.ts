@@ -1,5 +1,5 @@
 /**
- * Venturely ranking formula — v1.
+ * TEAMi ranking formula — v1.
  *
  * Rankings reward demonstrated, evidence-backed work. They never use followers,
  * profile views, likes or raw activity counts. Everything here is a pure function

@@ -5,7 +5,7 @@
  *   npm run db:seed                 # taxonomy + demo data
  *   SEED_DEMO=false npm run db:seed # taxonomy only (production)
  *
- * Demo accounts use @demo.venturely.dev and are flagged isDemo. Re-running the
+ * Demo accounts use @demo.teami.dev and are flagged isDemo. Re-running the
  * seed deletes and recreates all demo accounts; real accounts are never touched.
  */
 import { randomBytes } from "node:crypto";
@@ -20,7 +20,7 @@ const DAY = 24 * 3600 * 1000;
 const now = Date.now();
 const daysAgo = (d: number) => new Date(now - d * DAY);
 const monthsAgo = (m: number) => new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() - m, 1));
-const DEMO_DOMAIN = "demo.venturely.dev";
+const DEMO_DOMAIN = "demo.teami.dev";
 
 async function seedSkills() {
   for (const s of SKILLS) {
@@ -50,7 +50,7 @@ async function main() {
   if (removed.count) console.log(`✓ removed ${removed.count} previous demo accounts`);
   await db.rankingRun.deleteMany({});
 
-  const demoPassword = process.env.SEED_DEMO_PASSWORD ?? "venturely-demo-1";
+  const demoPassword = process.env.SEED_DEMO_PASSWORD ?? "teami-demo-1";
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? randomBytes(12).toString("base64url");
   const [passwordHash, adminHash] = await Promise.all([bcrypt.hash(demoPassword, 10), bcrypt.hash(adminPassword, 12)]);
 

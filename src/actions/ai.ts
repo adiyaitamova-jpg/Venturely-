@@ -11,20 +11,21 @@ import * as copilot from "@/server/ai/copilot";
 
 const id = z.string().min(1).max(64);
 
+// Both actions navigate server-side on success: a client-side push racing the
+// action's own refresh can be dropped, leaving the user on the form.
 export async function matchTeammatesAction(values: unknown) {
-  return authedAction(async (user) => {
-    const result = await matchTeammates(user.id, parseInput(matchRequestSchema, values));
-    revalidatePath("/mentor");
-    return { runId: result.runId };
+  const result = await authedAction(async (user) => {
+    const r = await matchTeammates(user.id, parseInput(matchRequestSchema, values));
+    return { runId: r.runId };
   });
+  if (result.ok) redirect(`/mentor/match?run=${result.data.runId}`);
+  return result;
 }
 
 export async function evaluateProjectAction(values: unknown) {
-  return authedAction(async (user) => {
-    const result = await evaluateProject(user.id, parseInput(evaluateRequestSchema, values));
-    revalidatePath("/mentor");
-    return result;
-  });
+  const result = await authedAction(async (user) => evaluateProject(user.id, parseInput(evaluateRequestSchema, values)));
+  if (result.ok) redirect(`/mentor/evaluate?assessment=${result.data.id}`);
+  return result;
 }
 
 export async function createConversationAction(projectId: unknown) {

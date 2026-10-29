@@ -1,4 +1,4 @@
-# Venturely
+# TEAMi
 
 A platform where ambitious students find teammates, build meaningful projects, keep an evidence-backed portfolio, appear on a transparent leaderboard, and get honest feedback from an AI mentor.
 
@@ -86,7 +86,7 @@ npm run db:seed                 # skill taxonomy + demo data
 npm run dev                     # http://localhost:3000
 ```
 
-**Demo login:** `maya@demo.venturely.dev` / `venturely-demo-1`. Every demo account uses `@demo.venturely.dev` and is labelled "Demo" in the UI. Its links point to `example.com`/`example.org`. The seed also prints the moderator account (`admin@demo.venturely.dev`) with a random password unless `SEED_ADMIN_PASSWORD` is set. Re-running the seed replaces demo data only; real accounts are never touched.
+**Demo login:** `maya@demo.teami.dev` / `teami-demo-1`. Every demo account uses `@demo.teami.dev` and is labelled "Demo" in the UI. Its links point to `example.com`/`example.org`. The seed also prints the moderator account (`admin@demo.teami.dev`) with a random password unless `SEED_ADMIN_PASSWORD` is set. Re-running the seed replaces demo data only; real accounts are never touched.
 
 ### Environment variables
 

@@ -27,7 +27,7 @@ export default function MethodologyPage() {
       </Link>
       <h1 className="mt-6 font-display text-[44px] leading-[1.05] tracking-[-0.01em] sm:text-[56px]">How ranking works</h1>
       <p className="mt-4 text-[17px] leading-relaxed text-ink-2">
-        Venturely rankings reward work you can show — not how many people follow you, how often you post, or how many projects you start. Every score is computed on our servers from the
+        TEAMi rankings reward work you can show — not how many people follow you, how often you post, or how many projects you start. Every score is computed on our servers from the
         records below. Nobody, including you, can edit a score directly.
       </p>
       <p className="mt-3 text-sm text-muted">Formula {FORMULA_VERSION}. Rankings recompute every 15 minutes; “7 days” movement compares with the ranking a week earlier.</p>

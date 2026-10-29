@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Community guidelines" };
 export default function GuidelinesPage() {
   return (
     <LegalPage title="Community guidelines" updated="October 2026">
-      <p>Venturely works because people can trust each other. Most members are teenagers, so we hold everyone — including adults — to a high standard.</p>
+      <p>TEAMi works because people can trust each other. Most members are teenagers, so we hold everyone — including adults — to a high standard.</p>
       <section>
         <h2>Be honest</h2>
         <ul>

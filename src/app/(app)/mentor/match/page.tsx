@@ -205,7 +205,7 @@ export default async function MatchPage({ searchParams }: { searchParams: Promis
             </ul>
           )}
         </section>
-        <AdvisoryNote>Matches are chosen by Venturely&apos;s algorithm from members who are discoverable and available; the AI only explains them and can make mistakes. Everyone here is a real (or clearly labelled demo) profile.</AdvisoryNote>
+        <AdvisoryNote>Matches are chosen by TEAMi&apos;s algorithm from members who are discoverable and available; the AI only explains them and can make mistakes. Everyone here is a real (or clearly labelled demo) profile.</AdvisoryNote>
       </div>
     );
   }

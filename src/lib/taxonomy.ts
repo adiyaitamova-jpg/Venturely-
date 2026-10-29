@@ -189,7 +189,7 @@ export const REGIONS: { value: Region; label: string }[] = [
 export const REGION_LABEL = Object.fromEntries(REGIONS.map((r) => [r.value, r.label])) as Record<Region, string>;
 
 export const VISIBILITY: { value: ProfileVisibility; label: string; hint: string }[] = [
-  { value: "MEMBERS", label: "Members only", hint: "Signed-in Venturely members can find and view you. Recommended." },
+  { value: "MEMBERS", label: "Members only", hint: "Signed-in TEAMi members can find and view you. Recommended." },
   { value: "PUBLIC", label: "Public", hint: "Anyone with your link can view your profile, including people without an account." },
   { value: "PRIVATE", label: "Private", hint: "Hidden from discovery, AI matching and leaderboards. Only you can see it." },
 ];

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import { matchTeammatesAction } from "@/actions/ai";
 import { SUGGESTED_ROLES } from "@/lib/taxonomy";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,6 @@ import { SkillPicker, type SkillOption } from "@/components/forms/skill-picker";
 import { Thinking } from "@/components/ai/thinking";
 
 export function MatchForm({ skills, projects, aiConfigured, defaultProjectId }: { skills: SkillOption[]; projects: { id: string; title: string; tagline: string }[]; aiConfigured: boolean; defaultProjectId?: string }) {
-  const router = useRouter();
   const [projectId, setProjectId] = React.useState(defaultProjectId ?? "");
   const [brief, setBrief] = React.useState("");
   const [skillIds, setSkillIds] = React.useState<string[]>([]);
@@ -33,9 +31,9 @@ export function MatchForm({ skills, projects, aiConfigured, defaultProjectId }: 
         setPending(true);
         setError(null);
         const res = await matchTeammatesAction({ brief, projectId: projectId || null, skillIds, roles });
+        // On success the action redirects to the result page.
         setPending(false);
-        if (!res.ok) return setError(res.error);
-        router.push(`/mentor/match?run=${res.data.runId}`);
+        if (res && !res.ok) setError(res.error);
       }}
     >
       <FormError message={error} />

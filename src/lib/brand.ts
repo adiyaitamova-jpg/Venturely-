@@ -1,7 +1,7 @@
 /** Branding lives here so the product name can change in one place. */
 export const BRAND = {
-  name: "Venturely",
+  name: "TEAMi",
   tagline: "Build real things with the right people.",
-  supportEmail: "hello@venturely.dev",
-  safetyEmail: "safety@venturely.dev",
+  supportEmail: "hello@teami.dev",
+  safetyEmail: "safety@teami.dev",
 } as const;

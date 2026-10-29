@@ -48,7 +48,7 @@ export default function PrivacyPage() {
       <section>
         <h2>Young members and consent</h2>
         <p>
-          Venturely is for people aged 13 and over. Depending on where a member lives, parental or guardian consent may be required for some processing (for example, the age of digital consent
+          TEAMi is for people aged 13 and over. Depending on where a member lives, parental or guardian consent may be required for some processing (for example, the age of digital consent
           ranges from 13 to 16 across the EU). Operators should implement a consent flow appropriate to their launch regions before opening sign-ups there. If you believe a child under 13 has
           created an account, contact {BRAND.safetyEmail} and we&apos;ll remove it.
         </p>

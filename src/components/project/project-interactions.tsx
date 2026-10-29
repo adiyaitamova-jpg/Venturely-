@@ -405,7 +405,7 @@ function FeedbackDialog({
   const [pending, setPending] = React.useState(false);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent title={`Feedback for ${member.displayName}`} description="Private to Venturely — they see that feedback was left, not your ratings. Be fair and honest." size="sm">
+      <DialogContent title={`Feedback for ${member.displayName}`} description="Private to TEAMi — they see that feedback was left, not your ratings. Be fair and honest." size="sm">
         <form
           className="space-y-5"
           onSubmit={async (e) => {

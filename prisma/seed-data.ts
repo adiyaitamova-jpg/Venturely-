@@ -1,6 +1,6 @@
 /**
  * Fictional demo people and projects. Every account is flagged isDemo and uses
- * the reserved demo.venturely.dev domain; every external link points at
+ * the reserved demo.teami.dev domain; every external link points at
  * example.com/example.org so nothing resolves to a real person's work.
  */
 import type {
@@ -1014,4 +1014,4 @@ export const PROJECTS: SeedProject[] = [
   },
 ];
 
-export const ADMIN = { email: "admin@demo.venturely.dev", name: "Venturely Moderator", username: "moderator" };
+export const ADMIN = { email: "admin@demo.teami.dev", name: "TEAMi Moderator", username: "moderator" };

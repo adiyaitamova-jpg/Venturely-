@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import { evaluateProjectAction } from "@/actions/ai";
 import { STAGES } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -11,7 +10,6 @@ import { Input, Select, Textarea } from "@/components/ui/input";
 import { Thinking } from "@/components/ai/thinking";
 
 export function EvaluateForm({ projects, defaultProjectId, disabled }: { projects: { id: string; title: string }[]; defaultProjectId?: string; disabled: boolean }) {
-  const router = useRouter();
   const [source, setSource] = React.useState<"project" | "idea">(projects.length ? "project" : "idea");
   const [projectId, setProjectId] = React.useState(defaultProjectId ?? projects[0]?.id ?? "");
   const [idea, setIdea] = React.useState({ title: "", description: "", goals: "", progress: "", stage: "IDEA", teamSize: 1 });
@@ -28,9 +26,9 @@ export function EvaluateForm({ projects, defaultProjectId, disabled }: { project
         setPending(true);
         setError(null);
         const res = await evaluateProjectAction(source === "project" ? { source, projectId } : { source, ...idea });
+        // On success the action redirects to the result page.
         setPending(false);
-        if (!res.ok) return setError(res.error);
-        router.push(`/mentor/evaluate?assessment=${res.data.id}`);
+        if (res && !res.ok) setError(res.error);
       }}
     >
       <FormError message={error} />

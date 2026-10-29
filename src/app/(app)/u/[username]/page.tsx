@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { profile } = data;
   return {
     title: `${profile.displayName} (@${profile.username})`,
-    description: profile.headline || `${profile.displayName} on Venturely`,
+    description: profile.headline || `${profile.displayName} on TEAMi`,
     // Only fully public profiles may be indexed.
     robots: { index: profile.visibility === "PUBLIC" && !profile.isDemo },
   };
@@ -234,7 +234,7 @@ export default async function ProfilePage({ params }: Params) {
               </h2>
               <p className="text-xs text-muted">
                 <BadgeCheck className="mr-1 inline size-3.5 -translate-y-px text-accent" aria-hidden />
-                Verified = evidence reviewed by a Venturely moderator
+                Verified = evidence reviewed by a TEAMi moderator
               </p>
             </div>
             {achievements.length === 0 ? (

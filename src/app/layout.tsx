@@ -16,10 +16,10 @@ const instrument = Instrument_Serif({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
-  title: { default: "Venturely — build real projects with the right team", template: "%s · Venturely" },
+  title: { default: "TEAMi — build real projects with the right team", template: "%s · TEAMi" },
   description:
-    "Venturely helps ambitious students find teammates, ship meaningful projects, and build an evidence-backed portfolio — with an AI mentor that gives honest feedback.",
-  applicationName: "Venturely",
+    "TEAMi helps ambitious students find teammates, ship meaningful projects, and build an evidence-backed portfolio — with an AI mentor that gives honest feedback.",
+  applicationName: "TEAMi",
 };
 
 export const viewport: Viewport = {

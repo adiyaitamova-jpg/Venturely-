@@ -9,7 +9,7 @@ type Mail = { to: string; subject: string; text: string };
  */
 export async function sendEmail(mail: Mail): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM ?? "Venturely <no-reply@venturely.dev>";
+  const from = process.env.EMAIL_FROM ?? "TEAMi <no-reply@teami.dev>";
   if (!key) {
     if (process.env.NODE_ENV !== "production") {
       console.info(`\n[email:dev] To: ${mail.to}\nSubject: ${mail.subject}\n\n${mail.text}\n`);

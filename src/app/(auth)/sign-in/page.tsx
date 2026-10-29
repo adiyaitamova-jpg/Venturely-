@@ -12,7 +12,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
       <p className="mb-7 mt-1.5 text-sm text-muted">Sign in to pick up where your team left off.</p>
       <SignInForm next={next} />
       <p className="mt-6 text-center text-sm text-muted">
-        New to Venturely?{" "}
+        New to TEAMi?{" "}
         <Link href={next ? `/sign-up?next=${encodeURIComponent(next)}` : "/sign-up"} className="font-medium text-accent hover:underline">
           Create an account
         </Link>
@@ -21,8 +21,8 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
         <div className="mt-8 rounded-lg border border-line bg-surface p-4 text-[13px] text-muted">
           <p className="font-medium text-ink">Exploring the demo?</p>
           <p className="mt-1">
-            Sign in as <span className="font-mono text-ink">maya@demo.venturely.dev</span> with password{" "}
-            <span className="font-mono text-ink">venturely-demo-1</span>. All demo accounts are fictional.
+            Sign in as <span className="font-mono text-ink">maya@demo.teami.dev</span> with password{" "}
+            <span className="font-mono text-ink">teami-demo-1</span>. All demo accounts are fictional.
           </p>
         </div>
       )}

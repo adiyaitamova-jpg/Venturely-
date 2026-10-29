@@ -12,7 +12,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         <div className="flex flex-1 items-center justify-center py-10">
           <div className="w-full max-w-[380px]">{children}</div>
         </div>
-        <p className="text-xs text-faint">Venturely is built for students aged 13 and up. We never show your email publicly.</p>
+        <p className="text-xs text-faint">TEAMi is built for students aged 13 and up. We never show your email publicly.</p>
       </div>
       <aside className="relative hidden overflow-hidden border-l border-line bg-accent text-paper lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="absolute inset-0 bg-grid opacity-[0.15] [mask-image:linear-gradient(to_bottom,black,transparent)]" aria-hidden />

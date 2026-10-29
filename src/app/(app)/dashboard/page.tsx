@@ -47,7 +47,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       {/* Greeting */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm text-muted">{welcome ? "Welcome to Venturely" : greeting()}</p>
+          <p className="text-sm text-muted">{welcome ? "Welcome to TEAMi" : greeting()}</p>
           <h1 className="mt-1 font-display text-[40px] leading-none tracking-[-0.01em] sm:text-[48px]">{welcome ? `Glad you're here, ${firstName}.` : `${firstName}.`}</h1>
           <p className="mt-3 max-w-xl text-[15px] text-muted">
             {pendingTotal > 0

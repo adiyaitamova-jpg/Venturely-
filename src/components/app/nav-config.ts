@@ -61,5 +61,5 @@ export function sectionTitle(pathname: string): string {
   const all = [...PRIMARY_NAV, ...PERSONAL_NAV, ADMIN_NAV, { href: "/notifications", label: "Notifications", icon: Inbox }, { href: "/search", label: "Search", icon: Compass }];
   const hit = all.find((i) => isActive(pathname, i));
   if (pathname.startsWith("/u/")) return "Profile";
-  return hit?.label ?? "Venturely";
+  return hit?.label ?? "TEAMi";
 }

@@ -17,6 +17,7 @@ export const RESERVED_USERNAMES = new Set([
   "settings",
   "support",
   "venturely",
+  "teami",
   "me",
 ]);
 

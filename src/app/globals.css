@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Venturely design tokens.
+ * TEAMi design tokens.
  * Warm paper background, ink typography, one restrained forest-green accent.
  * Every component reads from these tokens; avoid raw hex values in components.
  */

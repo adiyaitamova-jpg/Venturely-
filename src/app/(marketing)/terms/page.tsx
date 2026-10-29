@@ -8,7 +8,7 @@ export default function TermsPage() {
   return (
     <LegalPage title="Terms of use" updated="October 2026" intro={<>Template terms for the product. <strong>Not legal advice and not reviewed by counsel</strong> — operators must adapt them before launch.</>}>
       <section>
-        <h2>Who can use Venturely</h2>
+        <h2>Who can use TEAMi</h2>
         <p>You must be at least 13. If local law requires a parent or guardian&apos;s consent for you to use online services, you need it before signing up.</p>
       </section>
       <section>

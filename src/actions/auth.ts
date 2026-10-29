@@ -56,8 +56,8 @@ export async function forgotPasswordAction(input: unknown) {
       const link = `${appUrl()}/reset-password/${created.token}`;
       await sendEmail({
         to: email,
-        subject: "Reset your Venturely password",
-        text: `Someone (hopefully you) asked to reset your Venturely password.\n\nReset it here (valid for 1 hour):\n${link}\n\nIf this wasn't you, you can ignore this email — your password won't change.`,
+        subject: "Reset your TEAMi password",
+        text: `Someone (hopefully you) asked to reset your TEAMi password.\n\nReset it here (valid for 1 hour):\n${link}\n\nIf this wasn't you, you can ignore this email — your password won't change.`,
       });
     }
     // Same response whether or not the account exists.

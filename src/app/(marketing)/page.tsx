@@ -12,7 +12,7 @@ import { RankMovement } from "@/components/ranking/rank-indicator";
 import type { PersonCard as PersonCardData } from "@/server/services/discovery";
 
 export const metadata: Metadata = {
-  title: { absolute: "Venturely — find your team, build real projects" },
+  title: { absolute: "TEAMi — find your team, build real projects" },
 };
 
 // Illustrative, fictional example data for product previews. Real member profiles are never shown on marketing pages.
@@ -76,7 +76,7 @@ export default async function LandingPage() {
               Find the people who make your ideas <em className="text-accent">real.</em>
             </h1>
             <p className="mt-6 max-w-lg text-[17px] leading-relaxed text-ink-2 text-pretty">
-              Venturely is where ambitious students find teammates, ship projects that matter, and build a portfolio backed by evidence — with an AI mentor that gives honest, specific feedback.
+              TEAMi is where ambitious students find teammates, ship projects that matter, and build a portfolio backed by evidence — with an AI mentor that gives honest, specific feedback.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">
@@ -329,7 +329,7 @@ export default async function LandingPage() {
             </p>
             <ul className="mt-6 space-y-2.5 text-[14px] text-paper/80">
               <li className="flex gap-2.5">
-                <ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent-line" aria-hidden /> Only recommends people who actually exist on Venturely and are open to it.
+                <ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent-line" aria-hidden /> Only recommends people who actually exist on TEAMi and are open to it.
               </li>
               <li className="flex gap-2.5">
                 <FileDiff className="mt-0.5 size-4 shrink-0 text-accent-line" aria-hidden /> Never changes your project without your review.

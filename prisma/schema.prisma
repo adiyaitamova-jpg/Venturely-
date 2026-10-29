@@ -1,4 +1,4 @@
-// Venturely data model.
+// TEAMi data model.
 // Conventions: cuid ids, createdAt/updatedAt on mutable records, cascading deletes
 // from User so account deletion removes personal data, SetNull where history
 // should survive (e.g. who reviewed a report).
@@ -22,7 +22,7 @@ enum UserRole {
 /// Who can see a profile. MEMBERS is the default (privacy by default for a teen audience).
 enum ProfileVisibility {
   PUBLIC // anyone with the link, including signed-out visitors
-  MEMBERS // signed-in Venturely members only
+  MEMBERS // signed-in TEAMi members only
   PRIVATE // only the owner; hidden from discovery, matching and leaderboards
 }
 
