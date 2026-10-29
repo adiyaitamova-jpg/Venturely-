@@ -120,10 +120,10 @@ npm run db:reset      # drop, migrate and re-seed the dev database
 
 ## Deployment (e.g. Vercel + managed Postgres)
 
-1. Provision Postgres (Neon, Supabase, RDS, …) and set `DATABASE_URL`, `APP_URL`, `ANTHROPIC_API_KEY`, `RESEND_API_KEY`, `EMAIL_FROM` and `CRON_SECRET`.
-2. Build command: `npx prisma migrate deploy && npm run build`.
-3. Seed the taxonomy once: `SEED_DEMO=false npm run db:seed`. Only seed demo data on staging.
-4. `vercel.json` schedules `/api/cron/rankings` every 15 minutes. Vercel sends `Authorization: Bearer $CRON_SECRET` automatically.
+1. Provision Postgres (Neon, Supabase, RDS, …) and set `DATABASE_URL`, `APP_URL`, `CRON_SECRET` and `SEED_ADMIN_PASSWORD`; optionally `ANTHROPIC_API_KEY`, `RESEND_API_KEY` and `EMAIL_FROM`.
+2. Vercel runs `npm run vercel-build` automatically: `prisma migrate deploy`, then `scripts/seed-if-empty.ts` (seeds only an empty database, so later deploys never reset data), then `next build`. Set `SEED_DEMO=false` before the first deploy to skip demo accounts.
+3. On other hosts use the same script as the build command.
+4. `vercel.json` schedules `/api/cron/rankings` once a day (the Hobby plan's limit); rankings also refresh lazily every 15 minutes. Vercel sends `Authorization: Bearer $CRON_SECRET` automatically.
 5. Leave `NEXT_PUBLIC_SHOW_DEMO_LOGIN` unset in production. Create a moderator by setting `role = 'ADMIN'` on a trusted account.
 
 On any other Node host: `npm ci && npx prisma migrate deploy && npm run build && npm start`, plus a scheduler that calls the cron endpoint.
